@@ -52,41 +52,13 @@ class MapsActivity : AppCompatActivity(), GoogleMap.OnMyLocationButtonClickListe
         mMap = googleMap
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
+        var present = LatLng(-34.0, 151.0)
         mMap.isIndoorEnabled = false // Don't show inside buildings
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
 
-        // 202207180916追加
-        // val location = ls.getPresentLocation(intent)
-        // val latitude = location["latitude"]!!
-        // val longitude = location["longitude"]!!
-        // val present = LatLng(latitude, longitude)
-        val present = LatLng(35.0, 135.8)
-
-        mMap.isMyLocationEnabled = true // Show current location
         mMap.setOnMyLocationButtonClickListener(this)
         mMap.setOnMyLocationClickListener(this)
-        // mMap.addMarker(MarkerOptions().position(sydney).title(""))
-        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(present))
         val zoomValue = 13.0f // 1.0f 〜 20.0f を指定
-        // googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, zoomValue))
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(present, zoomValue))
     }
 
