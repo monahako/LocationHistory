@@ -1,8 +1,13 @@
 package com.example.locationhistory
 
+import android.Manifest
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -41,6 +46,7 @@ class SwitchFragment: Fragment() {
         }
     }
 
+    //ユーザーの操作結果を見てパーミッション確認に進む
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -54,7 +60,19 @@ class SwitchFragment: Fragment() {
 
     // 位置情報取得のパーミッションを得ているかチェックする（Check whether you have permission to get location.）
     private fun checkLocationPermission() {
-
+        // contextがnullなら何もしない
+        val ctx = context ?: return
+        // パーミッション確認
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // 位置情報のリクエスト開始
+            val intent = Intent(ctx, LocationService::class.java)
+            val service = PendingIntent.getService(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            LocationServices.getFusedLocationProviderClient(ctx).requestLocationUpdates(getLocationRequest(), service)
+            ctx.getSharedPreferences("LocationRequesting", Context.MODE_PRIVATE).edit().putBoolean("isRequesting", true).apply()
+        } else {
+            // パーミッションを要求
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
     }
 
     // Show error and  close activity.
