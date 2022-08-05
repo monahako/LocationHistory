@@ -1,6 +1,7 @@
 package com.example.locationhistory
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ApiException
@@ -131,7 +133,8 @@ class SwitchFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_switch, container, false)
-        val switch = view.findViewById<Switch>(R.id.locationSwitch)
+        //val switch = view.findViewById<Switch>(R.id.locationSwitch)
+        val switch = view.findViewById<SwitchCompat>(R.id.switch1)
 
         // 保存されている位置情報のリクエスト状況に応じてスイッチのON/OFF初期表示を変える
         val isRequesting = context?.getSharedPreferences("LocationRequesting", Context.MODE_PRIVATE)?.getBoolean("isRequesting", false) ?: false
