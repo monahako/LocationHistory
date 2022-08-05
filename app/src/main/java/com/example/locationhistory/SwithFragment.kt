@@ -6,6 +6,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Switch
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -89,5 +94,57 @@ class SwitchFragment: Fragment() {
             priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         }
         return locationRequest
+    }
+
+    // ユーザーがパーミッションを許可したかどうか確認する
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            //パーミッションが付与されたら位置情報のリクエストを開始
+            checkLocationPermission()
+        } else {
+            // パーミッションが付与されなかった
+            showErrorMessage()
+        }
+    }
+
+    //位置情報のリクエストを停止する
+    private fun stopLocationRequest() {
+        val ctx = context ?: null
+        val intent = Intent(ctx, LocationService::class.java)
+        val service = PendingIntent.getService(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        if (ctx != null) {
+            LocationServices.getFusedLocationProviderClient(ctx).removeLocationUpdates(service)
+            ctx.getSharedPreferences("LocationRequesting", Context.MODE_PRIVATE).edit().putBoolean("isRequesting", true).apply()
+        } else {
+            showErrorMessage()
+        }
+    }
+
+    // フラグメントのビューを生成するonCreateView()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_switch, container, false)
+        val switch = view.findViewById<Switch>(R.id.locationSwitch)
+
+        // 保存されている位置情報のリクエスト状況に応じてスイッチのON/OFF初期表示を変える
+        val isRequesting = context?.getSharedPreferences("LocationRequesting", Context.MODE_PRIVATE)?.getBoolean("isRequesting", false) ?: false
+        switch.isChecked = isRequesting
+
+        // ユーザーがスイッチを切り替えた時の処理
+        switch.setOnCheckedChangeListener {_, isChecked ->
+            if (isChecked) {
+                checkLocationAvailable()
+            } else {
+                stopLocationRequest()
+            }
+        }
+        return view
     }
 }
