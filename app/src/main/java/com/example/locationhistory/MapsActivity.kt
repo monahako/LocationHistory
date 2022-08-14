@@ -3,6 +3,7 @@ package com.example.locationhistory
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.icu.util.Calendar
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,6 +23,7 @@ import com.example.locationhistory.LocationDatabase
 class MapsActivity : AppCompatActivity(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
+    private var currentDate = Calendar.getInstance()
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
 
@@ -32,11 +34,18 @@ class MapsActivity : AppCompatActivity(), GoogleMap.OnMyLocationButtonClickListe
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        /*
+        mapFragment.getMapAsync {
+            renderMap()
+        }
+
+        fun renderMap() {
+
+        }
+        */
     }
 
     /**

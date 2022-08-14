@@ -66,6 +66,7 @@ class SwitchFragment: Fragment() {
     }
 
     // 位置情報取得のパーミッションを得ているかチェックする（Check whether you have permission to get location.）
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun checkLocationPermission() {
         // contextがnullなら何もしない
         val ctx = context ?: return
@@ -73,7 +74,7 @@ class SwitchFragment: Fragment() {
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // 位置情報のリクエスト開始
             val intent = Intent(ctx, LocationService::class.java)
-            val service = PendingIntent.getService(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val service = PendingIntent.getService(ctx, 1, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
             LocationServices.getFusedLocationProviderClient(ctx).requestLocationUpdates(getLocationRequest(), service)
             ctx.getSharedPreferences("LocationRequesting", Context.MODE_PRIVATE).edit().putBoolean("isRequesting", true).apply()
         } else {
@@ -114,10 +115,11 @@ class SwitchFragment: Fragment() {
     }
 
     //位置情報のリクエストを停止する
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun stopLocationRequest() {
         val ctx = context ?: null
         val intent = Intent(ctx, LocationService::class.java)
-        val service = PendingIntent.getService(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val service = PendingIntent.getService(ctx, 1, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         if (ctx != null) {
             LocationServices.getFusedLocationProviderClient(ctx).removeLocationUpdates(service)
             ctx.getSharedPreferences("LocationRequesting", Context.MODE_PRIVATE).edit().putBoolean("isRequesting", true).apply()
